@@ -37,34 +37,9 @@
       color: #e50914;
       margin-bottom: 6px;
     }
-    .subtitle {
-      color: #a0a0b0;
-      font-size: 0.9rem;
-      margin-bottom: 24px;
-    }
-    .device-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(229, 9, 20, 0.15);
-      color: #ff6b73;
-      border: 1px solid rgba(229, 9, 20, 0.3);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-    .form-group {
-      text-align: right;
-      margin-bottom: 16px;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      color: #a0a0b0;
-      margin-bottom: 6px;
-    }
+    .subtitle { color: #a0a0b0; font-size: 0.9rem; margin-bottom: 24px; }
+    .form-group { text-align: right; margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; color: #a0a0b0; margin-bottom: 6px; }
     .form-group input {
       width: 100%;
       background: #0f0f13;
@@ -74,12 +49,8 @@
       border-radius: 12px;
       font-size: 1rem;
       outline: none;
-      transition: all 0.2s;
     }
-    .form-group input:focus {
-      border-color: #e50914;
-      box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
-    }
+    .form-group input:focus { border-color: #e50914; }
     .btn-submit {
       width: 100%;
       background: #e50914;
@@ -91,59 +62,31 @@
       font-weight: 700;
       cursor: pointer;
       margin-top: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s;
     }
-    .btn-submit:hover { background: #f40612; transform: translateY(-2px); }
-    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    
-    /* أنيميشن النجاح والتحميل */
     .status-state { display: none; padding: 20px 0; }
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #2a2a35;
-      border-top-color: #e50914;
-      border-radius: 50%;
-      margin: 0 auto 16px;
-      animation: spin 0.8s linear infinite;
-    }
     .success-icon {
-      width: 64px;
-      height: 64px;
+      width: 64px; height: 64px;
       background: rgba(74, 222, 128, 0.15);
       color: #4ade80;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      margin: 0 auto 16px;
-      animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin: 0 auto 16px;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
   </style>
 </head>
 <body>
-
   <div class="card">
     <div class="brand">
       <i class="fas fa-play-circle"></i>
       <span>سينما بلس</span>
     </div>
-    <p class="subtitle">إدخال بيانات الاشتراك</p>
+    <p class="subtitle">إدخال بيانات الاشتراك للشاشة</p>
 
-    <div class="device-badge">
-      <i class="fas fa-tv"></i>
-      <span>ربط مباشر مع الشاشة</span>
-    </div>
-
-    <!-- نموذج الإدخال -->
     <form id="pairForm" onsubmit="sendToDevice(event)">
+      <div class="form-group">
+        <label>رمز التحقق ( الظاهر على الشاشة )</label>
+        <input type="text" id="code" placeholder="مثال: 972829" required autocomplete="off">
+      </div>
       <div class="form-group">
         <label>رابط السيرفر</label>
         <input type="text" id="url" placeholder="http://server.com:8080" required autocomplete="url">
@@ -160,38 +103,32 @@
         <label>الاسم الظاهر (اختياري)</label>
         <input type="text" id="name" placeholder="مثال: شاشة المجلس">
       </div>
-      <button type="submit" class="btn-submit" id="submitBtn">
-        <i class="fas fa-paper-plane"></i> إرسال للشاشة
-      </button>
+      <button type="submit" class="btn-submit" id="submitBtn">إرسال للشاشة</button>
     </form>
 
-    <!-- حالة التحميل -->
     <div id="loadingState" class="status-state">
-      <div class="spinner"></div>
-      <h3>جاري الإرسال للشاشة...</h3>
-      <p style="color:#a0a0b0; font-size:0.85rem; margin-top:6px">خليك بالصفحة ثواني بسيطة</p>
+      <h3>جاري الإرسال...</h3>
     </div>
 
-    <!-- حالة النجاح -->
     <div id="successState" class="status-state">
       <div class="success-icon"><i class="fas fa-check"></i></div>
       <h3 style="color:#4ade80">تم تسجيل دخولك بنجاح!</h3>
-      <p style="color:#a0a0b0; font-size:0.85rem; margin-top:8px">تم إرسال البيانات للشاشة، يمكنك إغلاق هذه الصفحة الآن.</p>
+      <p style="color:#a0a0b0; font-size:0.85rem; margin-top:8px">يمكنك إغلاق هذه الصفحة الآن.</p>
     </div>
   </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const topic = urlParams.get('topic');
+    let topicFromUrl = urlParams.get('topic');
+    if (topicFromUrl) {
+      document.getElementById('code').value = topicFromUrl.replace('cinemaplus_pair_', '');
+    }
 
     async function sendToDevice(e) {
       e.preventDefault();
-      if (!topic) {
-        alert('رمز الاقتران غير صالح أو مفقود!');
-        return;
-      }
+      const codeVal = document.getElementById('code').value.trim();
+      const topic = "cinemaplus_pair_" + codeVal;
 
-      const btn = document.getElementById('submitBtn');
       const form = document.getElementById('pairForm');
       const loading = document.getElementById('loadingState');
       const success = document.getElementById('successState');
@@ -219,7 +156,7 @@
           throw new Error('فشل الإرسال');
         }
       } catch (err) {
-        alert('تعذر الاتصال بالشاشة، تأكد من اتصال الإنترنت وحاول مجدداً.');
+        alert('تعذر الاتصال، تأكد من الرمز أو الإنترنت.');
         loading.style.display = 'none';
         form.style.display = 'block';
       }
