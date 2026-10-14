@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>سينما بلس — إدخال بيانات الاشتراك</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -27,16 +28,7 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
       text-align: center;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #e50914;
-      margin-bottom: 6px;
-    }
+    .brand { font-size: 1.6rem; font-weight: 800; color: #e50914; margin-bottom: 6px; }
     .subtitle { color: #a0a0b0; font-size: 0.9rem; margin-bottom: 24px; }
     .form-group { text-align: right; margin-bottom: 16px; }
     .form-group label { display: block; font-size: 0.85rem; color: #a0a0b0; margin-bottom: 6px; }
@@ -76,28 +68,25 @@
 </head>
 <body>
   <div class="card">
-    <div class="brand">
-      <i class="fas fa-play-circle"></i>
-      <span>سينما بلس</span>
-    </div>
+    <div class="brand">🎬 سينما بلس</div>
     <p class="subtitle">إدخال بيانات الاشتراك للشاشة</p>
 
     <form id="pairForm" onsubmit="sendToDevice(event)">
       <div class="form-group">
         <label>رمز التحقق ( الظاهر على الشاشة )</label>
-        <input type="text" id="code" placeholder="مثال: 972829" required autocomplete="off">
+        <input type="text" id="code" placeholder="مثال: 972829" required>
       </div>
       <div class="form-group">
         <label>رابط السيرفر</label>
-        <input type="text" id="url" placeholder="http://server.com:8080" required autocomplete="url">
+        <input type="text" id="url" placeholder="http://server.com:8080" required>
       </div>
       <div class="form-group">
         <label>اسم المستخدم</label>
-        <input type="text" id="user" placeholder="username" required autocomplete="username">
+        <input type="text" id="user" placeholder="username" required>
       </div>
       <div class="form-group">
         <label>كلمة المرور</label>
-        <input type="password" id="pass" placeholder="password" required autocomplete="current-password">
+        <input type="password" id="pass" placeholder="password" required>
       </div>
       <div class="form-group">
         <label>الاسم الظاهر (اختياري)</label>
@@ -112,8 +101,8 @@
 
     <div id="successState" class="status-state">
       <div class="success-icon"><i class="fas fa-check"></i></div>
-      <h3 style="color:#4ade80">تم تسجيل دخولك بنجاح!</h3>
-      <p style="color:#a0a0b0; font-size:0.85rem; margin-top:8px">يمكنك إغلاق هذه الصفحة الآن.</p>
+      <h3 style="color:#4ade80">تم إرسال البيانات للشاشة!</h3>
+      <p style="color:#a0a0b0; font-size:0.85rem; margin-top:8px">تم تسجيل الدخول بنجاح.</p>
     </div>
   </div>
 
@@ -133,7 +122,8 @@
       const loading = document.getElementById('loadingState');
       const success = document.getElementById('successState');
 
-      const data = {
+      // تجهيز الكائنات بداخل نص مباشر عشان يضمن الـ ntfy استقبالها بدون مشاكل تعقيد الـ JSON
+      const payload = {
         url: document.getElementById('url').value.trim(),
         user: document.getElementById('user').value.trim(),
         pass: document.getElementById('pass').value.trim(),
@@ -144,19 +134,18 @@
       loading.style.display = 'block';
 
       try {
-        const res = await fetch('https://ntfy.sh/' + topic, {
+        // إرسال البيانات عبر ندفاي بصيغة نصية واضحة
+        await fetch('https://ntfy.sh/' + topic, {
           method: 'POST',
-          body: JSON.stringify(data)
+          body: JSON.stringify({
+            message: JSON.stringify(payload)
+          })
         });
 
-        if (res.ok) {
-          loading.style.display = 'none';
-          success.style.display = 'block';
-        } else {
-          throw new Error('فشل الإرسال');
-        }
+        loading.style.display = 'none';
+        success.style.display = 'block';
       } catch (err) {
-        alert('تعذر الاتصال، تأكد من الرمز أو الإنترنت.');
+        alert('تعذر الإرسال، تحقق من الإنترنت.');
         loading.style.display = 'none';
         form.style.display = 'block';
       }
